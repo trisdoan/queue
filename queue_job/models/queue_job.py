@@ -293,7 +293,7 @@ class QueueJob(models.Model):
         )
         action.update(
             {
-                "name": _("Jobs for graph %s") % (self.graph_uuid),
+                "name": _("Jobs for graph %s", self.graph_uuid),
                 "context": {},
                 "domain": [("id", "in", jobs.ids)],
             }
