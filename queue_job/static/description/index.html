@@ -408,6 +408,7 @@ retry after 1 minutes, …</li>
 description, number of retries</li>
 <li>Related Actions: link an action on the job view, such as open the record
 concerned by the job</li>
+<li>Error Handler: trigger a method when job fails, such as calling a webhook</li>
 </ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
@@ -744,6 +745,14 @@ keys are tries and values are seconds to postpone as integers:</p>
 <li>retries 10 to 15 postponed 30 seconds later</li>
 <li>all subsequent retries postponed 5 minutes later</li>
 </ul>
+<p><strong>Job function: Error Handler</strong></p>
+<p>The <em>Error Handler</em> is a method executed whenever the job fails</p>
+<p>It’s configured similarly to Related Action</p>
+<p>There is an OOTB handler: _call_webhook, which calls a webhook with configurable information.</p>
+<p>Example of using _call_webhook to call a webhook to Slack:</p>
+<pre class="code xml literal-block">
+<span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;error_handler&quot;</span><span class="w"> </span><span class="na">eval=</span><span class="s">'{&quot;func_name&quot;: &quot;_call_webhook&quot;, &quot;kwargs&quot;: {&quot;webhook_url&quot;: &quot;XXX&quot;, &quot;only_if_max_retries_reached&quot;:True, &quot;payload&quot;: {&quot;text&quot;: &quot;Hello World!&quot;}}}'</span><span class="w"> </span><span class="nt">/&gt;</span>
+</pre>
 <p><strong>Job Context</strong></p>
 <p>The context of the recordset of the job, or any recordset passed in arguments of
 a job, is transferred to the job according to an allow-list.</p>
@@ -982,6 +991,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <li>Souheil Bejaoui &lt;<a class="reference external" href="mailto:souheil.bejaoui&#64;acsone.eu">souheil.bejaoui&#64;acsone.eu</a>&gt;</li>
 <li>Eric Antones &lt;<a class="reference external" href="mailto:eantones&#64;nuobit.com">eantones&#64;nuobit.com</a>&gt;</li>
 <li>Simone Orsi &lt;<a class="reference external" href="mailto:simone.orsi&#64;camptocamp.com">simone.orsi&#64;camptocamp.com</a>&gt;</li>
+<li>Tris Doan &lt;<a class="reference external" href="mailto:tridm&#64;trobz.com">tridm&#64;trobz.com</a>&gt;</li>
 </ul>
 </div>
 <div class="section" id="maintainers">

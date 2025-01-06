@@ -1,9 +1,12 @@
 # Copyright 2013-2020 Camptocamp SA
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
+import json
 import logging
 import random
 from datetime import datetime, timedelta
+
+import requests
 
 from odoo import _, api, exceptions, fields, models
 from odoo.osv import expression
@@ -506,3 +509,31 @@ class QueueJob(models.Model):
         _logger.info("Running test job.")
         if random.random() <= failure_rate:
             raise JobError("Job failed")
+
+    def _call_webhook(self, **kwargs):
+        only_if_max_retries_reached = kwargs.get("only_if_max_retries_reached", False)
+        job = kwargs.get("job")
+        if only_if_max_retries_reached and (job and job.retry < job.max_retries):
+            return
+
+        webhook_url = kwargs.get("webhook_url", None)
+        if not webhook_url:
+            return
+        payload = kwargs.get("payload", None)
+        json_values = json.dumps(payload, sort_keys=True, default=str)
+        headers = kwargs.get("headers", {"Content-Type": "application/json"})
+        # inspired by https://github.com/odoo/odoo/blob/18.0/odoo/addons/base
+        # /models/ir_actions.py#L867
+        try:
+            response = requests.post(
+                url=webhook_url, data=json_values, headers=headers, timeout=1
+            )
+            response.raise_for_status()
+        except requests.exceptions.ReadTimeout:
+            _logger.warning(
+                "Webhook call timed out after 1s - it may or may not have failed. "
+                "If this happens often, it may be a sign that the system you're "
+                "trying to reach is slow or non-functional."
+            )
+        except requests.exceptions.RequestException as exc:
+            _logger.warning("Webhook call failed: %s", exc)
