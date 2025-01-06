@@ -74,6 +74,7 @@ Features:
   description, number of retries
 * Related Actions: link an action on the job view, such as open the record
   concerned by the job
+* Error Handler: trigger a method when job fails, such as calling a webhook
 
 **Table of contents**
 
@@ -429,6 +430,21 @@ Based on this configuration, we can tell that:
 * retries 10 to 15 postponed 30 seconds later
 * all subsequent retries postponed 5 minutes later
 
+**Job function: Error Handler**
+
+The *Error Handler* is a method executed whenever the job fails
+
+It's configured similarly to Related Action
+
+There is an OOTB handler: _call_webhook, which calls a webhook with configurable information.
+
+Example of using _call_webhook to call a webhook to Slack:
+
+.. code-block:: xml
+
+    <field name="error_handler" eval='{"func_name": "_call_webhook", "kwargs": {"webhook_url": "XXX", "only_if_max_retries_reached":True, "payload": {"text": "Hello World!"}}}' />
+
+
 **Job Context**
 
 The context of the recordset of the job, or any recordset passed in arguments of
@@ -687,6 +703,7 @@ Contributors
 * Souheil Bejaoui <souheil.bejaoui@acsone.eu>
 * Eric Antones <eantones@nuobit.com>
 * Simone Orsi <simone.orsi@camptocamp.com>
+* Tris Doan <tridm@trobz.com>
 
 Maintainers
 ~~~~~~~~~~~
